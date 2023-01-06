@@ -1,10 +1,10 @@
-import { Content, ContentProps } from "@reusable-ui/components";
+import { Container, ContainerProps } from "@reusable-ui/components";
 
 
 
-export function Main(props: ContentProps) {
+export function Main(props: ContainerProps) {
     return (
-        <Content
+        <Container
             {...props}
             
             tag={props.tag ?? 'main'}
