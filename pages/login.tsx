@@ -7,12 +7,12 @@ export default function Home() {
     return (
         <>
             <Head>
-                <title>Home</title>
-                <meta name="description" content="the homepage" />
+                <title>Login</title>
+                <meta name="description" content="the login page" />
             </Head>
             <main className={styles.main}>
                 <p>
-                    Welcome to my site!
+                    Please login!
                 </p>
             </main>
         </>
