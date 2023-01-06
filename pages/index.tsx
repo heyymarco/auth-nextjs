@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { Main } from '../components/Main'
 
 
 
@@ -10,11 +10,11 @@ export default function Home() {
                 <title>Home</title>
                 <meta name="description" content="the homepage" />
             </Head>
-            <main className={styles.main}>
+            <Main>
                 <p>
                     Welcome to my site!
                 </p>
-            </main>
+            </Main>
         </>
-    )
+    );
 }

@@ -9,7 +9,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head';
 import { Collapse, HamburgerMenuButton, Nav, Navbar, NavItem } from '@reusable-ui/components';
 import Link from 'next/link';
-import { AuthProvider } from '../components/auth';
+import { AuthProvider } from '../components/RequireAuth';
 
 
 
@@ -45,6 +45,7 @@ const Header = () => {
                         <Collapse className='list' mainClass={navbarExpanded ? '' : undefined} expanded={listExpanded}>
                             <Nav tag='ul' role='' {...basicVariantProps} orientation={navbarExpanded ? 'inline' : 'block'} listStyle='flat' gradient={navbarExpanded ? 'inherit' : false}>
                                 <NavItem><Link href='/'>Home</Link></NavItem>
+                                <NavItem><Link href='/admin'>Admin</Link></NavItem>
                                 <NavItem><Link href='/login'>Login</Link></NavItem>
                             </Nav>
                         </Collapse>
@@ -57,9 +58,6 @@ const Header = () => {
 const Footer = () => {
     return (
         <footer>
-            <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            </p>
         </footer>
     );
 }
