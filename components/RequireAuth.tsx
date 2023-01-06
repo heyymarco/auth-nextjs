@@ -25,12 +25,7 @@ export interface AuthProviderProps {
     children ?: React.ReactNode
 }
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-    const authState = useState<Auth|undefined>({
-        accessToken  : '',
-        refreshToken : '',
-        username     : '',
-        roles        : [],
-    });
+    const authState = useState<Auth|undefined>(undefined); // initially no user was logged in
     
     
     
