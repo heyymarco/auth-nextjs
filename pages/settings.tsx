@@ -6,7 +6,7 @@ import { Main } from '../components/Main'
 
 export default function Settings() {
     return (
-        <RequireAuth roles={[Role.Admin]}>
+        <RequireAuth roles={['admin']}>
             <Head>
                 <title>Settings</title>
                 <meta name="description" content="the setting page" />

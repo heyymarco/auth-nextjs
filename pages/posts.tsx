@@ -6,7 +6,7 @@ import { Main } from '../components/Main'
 
 export default function Posts() {
     return (
-        <RequireAuth roles={[Role.Admin, Role.Editor]}>
+        <RequireAuth roles={['admin', 'editor']}>
             <Head>
                 <title>Posts</title>
                 <meta name="description" content="the posts page" />

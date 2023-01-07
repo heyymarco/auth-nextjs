@@ -1,17 +1,78 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/router';
+import jwt from "jsonwebtoken";
 
 
 
-export const enum Role {
-    Admin  = 'admin',
-    Editor = 'editor',
-}
-export interface Auth {
-    accessToken  : string
-    refreshToken : string
-    username     : string
-    roles        : Role[]
+export type Role = 'admin' | 'editor' | (string & {})
+export class Auth {
+    #accessToken   : string
+    #refreshToken  : string
+    #usernameCache : string|undefined = undefined
+    #rolesCache    : Role[]|undefined = undefined
+    
+    
+    
+    constructor(accessToken: string, refreshToken: string) {
+        this.#accessToken  = accessToken;
+        this.#refreshToken = refreshToken;
+    }
+    
+    
+    
+    //#region tokens
+    get accessToken(): string {
+        return this.#accessToken;
+    }
+    
+    get refreshToken(): string {
+        return this.#refreshToken;
+    }
+    //#endregion tokens
+    
+    
+    
+    //#region username
+    get username() : string {
+        if (this.#usernameCache !== undefined) return this.#usernameCache;
+        
+        
+        
+        const decoded = jwt.decode(this.accessToken);
+        if (!decoded || (typeof(decoded) !== 'object')) return this.#usernameCache = '';
+        
+        
+        
+        this.#rolesCache = (decoded.roles ?? []);
+        return this.#usernameCache = (decoded.username ?? '');
+    }
+    //#endregion username
+    
+    
+    
+    //#region roles
+    get roles() : Role[] {
+        if (this.#rolesCache !== undefined) return this.#rolesCache;
+        
+        
+        
+        const decoded = jwt.decode(this.accessToken);
+        if (!decoded || (typeof(decoded) !== 'object')) return this.#rolesCache = [];
+        
+        
+        
+        this.#usernameCache = (decoded.username ?? '');
+        return this.#rolesCache = (decoded.roles ?? []);
+    }
+    
+    hasRoles(requiredRoles: Role[]|undefined): boolean {
+        if (!requiredRoles || !requiredRoles.length) return true;
+        
+        
+        
+        return this.roles.findIndex((userRole) => requiredRoles.includes(userRole)) >= 0;
+    }
+    //#endregion roles
 }
 
 
@@ -63,7 +124,7 @@ const RedirectTo = ({href}: RedirectToProps) => {
     
     return <></>;
 }
-export interface RequireAuthProps extends Required<Pick<Auth, 'roles'>> {
+export interface RequireAuthProps extends Partial<Pick<Auth, 'roles'>> {
     children ?: React.ReactNode
 }
 export const RequireAuth = ({roles: requiredRoles, children}: RequireAuthProps) => {
@@ -75,7 +136,7 @@ export const RequireAuth = ({roles: requiredRoles, children}: RequireAuthProps) 
         return <RedirectTo href='/login' />;
     } // if
     
-    if (!auth.roles.find((userRole) => requiredRoles.includes(userRole)))  {
+    if (!auth.hasRoles(requiredRoles)) {
         return <RedirectTo href='/unauthorized' />;
     } // if
     
