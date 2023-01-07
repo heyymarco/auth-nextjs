@@ -25,9 +25,15 @@ export default function Login() {
                 },
             );
             const responseData = response.data;
-            const accessToken  = responseData.accessToken  ?? '';
-            const refreshToken = responseData.refreshToken ?? ''
-            setAuth(new Auth(accessToken, refreshToken));
+            const accessToken  = responseData?.accessToken ?? '';
+            if (!accessToken) {
+                alert(`login failed`);
+                return;
+            } // if
+            
+            
+            
+            setAuth(new Auth(accessToken, 'http://localhost:3001'));
             router.replace(new URLSearchParams(window.location.search).get('from') ?? '/');
         }
         catch (error) {

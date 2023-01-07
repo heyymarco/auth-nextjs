@@ -1,21 +1,28 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import jwt from "jsonwebtoken";
+import axios from 'axios';
+
+
+
+// const alreadyHandledKey = Symbol(); // axios doesn't persist symbol key
+const alreadyHandledKey = '__alreadyHandled';
 
 
 
 export type Role = 'admin' | 'editor' | (string & {})
 export class Auth {
     #accessToken   : string
-    #refreshToken  : string
     #usernameCache : string|undefined = undefined
     #rolesCache    : Role[]|undefined = undefined
+    #authServerURL : string
+    #axiosCache    : ReturnType<typeof axios.create>|undefined = undefined
     
     
     
-    constructor(accessToken: string, refreshToken: string) {
-        this.#accessToken  = accessToken;
-        this.#refreshToken = refreshToken;
+    constructor(accessToken: string, authServerURL: string) {
+        this.#accessToken   = accessToken;
+        this.#authServerURL = authServerURL;
     }
     
     
@@ -25,8 +32,30 @@ export class Auth {
         return this.#accessToken;
     }
     
-    get refreshToken(): string {
-        return this.#refreshToken;
+    async refreshAccessToken(): Promise<boolean> {
+        try {
+            const response = await axios.get(
+                'refresh',
+                {
+                    baseURL         : this.#authServerURL,
+                    headers         : { 'Content-Type': 'application/json' },
+                    withCredentials : true,
+                },
+            );
+            const responseData = response.data;
+            const accessToken  = responseData?.accessToken ?? '';
+            if (!accessToken) return false;
+            
+            
+            
+            this.#accessToken   = accessToken;
+            this.#usernameCache = undefined;
+            this.#rolesCache    = undefined;
+            return true;
+        }
+        catch (error) {
+            return false;
+        } // try
     }
     //#endregion tokens
     
@@ -73,6 +102,64 @@ export class Auth {
         return this.roles.findIndex((userRole) => requiredRoles.includes(userRole)) >= 0;
     }
     //#endregion roles
+    
+    
+    
+    //#region axios
+    get axios() {
+        if (this.#axiosCache !== undefined) return this.#axiosCache;
+        
+        
+        
+        const axiosAuth = axios.create({
+            baseURL         : this.#authServerURL,
+            headers         : { 'Content-Type': 'application/json' },
+            withCredentials : true,
+        });
+        axiosAuth.interceptors.request.use(
+            (config) => {
+                if (!(config.headers as any)?.Authorization) {
+                    // inject existing auth token header:
+                    (config.headers as any).Authorization = `Bearer ${this.accessToken}`;
+                } // if
+                
+                
+                
+                return config;
+            },
+            (error) => Promise.reject(error),
+        );
+        axiosAuth.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                if (error?.response?.status === 403) {
+                    const config = error?.config;
+                    if (!config?.[alreadyHandledKey]) {
+                        config[alreadyHandledKey] = true;
+                        
+                        
+                        
+                        // refresh the access token:
+                        if (await this.refreshAccessToken()) {
+                            // inject a new auth token header:
+                            (config.headers as any).Authorization = `Bearer ${this.accessToken}`;
+                            
+                            
+                            
+                            // retry with a new auth:
+                            return axiosAuth(config);
+                        } // if
+                    } // if
+                } // if
+                
+                
+                
+                return Promise.reject(error);
+            },
+        );
+        return this.#axiosCache = axiosAuth;
+    }
+    //#endregion axios
 }
 
 
