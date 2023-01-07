@@ -54,7 +54,7 @@ const RedirectTo = ({href}: RedirectToProps) => {
     // router.replace(href, { query: { from: router.pathname } });
     
     // works:
-    router.replace(href);
+    if (typeof(window) !== 'undefined') router.replace(href);
     useEffect(() => {
         router.replace(href, { query: { from: router.pathname } });
     }, []);

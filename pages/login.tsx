@@ -1,9 +1,45 @@
+import { Button, Card, CardBody, CardHeader, PasswordInput, TextInput } from '@reusable-ui/components';
 import Head from 'next/head'
+import { useAuth } from '../components/auth';
 import { Main } from '../components/Main'
+import axios from '../libs/axios';
+import { useRouter } from 'next/router';
 
 
 
 export default function Login() {
+    const [, setAuth] = useAuth();
+    const router = useRouter();
+    
+    const handleSubmit : React.FormEventHandler<HTMLFormElement> = async (event) => {
+        event.preventDefault();
+        const requestData = new FormData(event.currentTarget);
+        
+        try {
+            const response = await axios.post(
+                '/login',
+                JSON.stringify(Object.fromEntries(requestData.entries())),
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true,
+                },
+            );
+            const responseData = response.data;
+            setAuth({
+                accessToken  : responseData.accessToken ?? '',
+                refreshToken : responseData.refreshToken ?? '',
+                username     : responseData.username ?? '',
+                roles        : responseData.roles ?? [],
+            });
+            router.replace(new URLSearchParams(window.location.search).get('from') ?? '/');
+        }
+        catch (error) {
+            alert(`login failed: ${error}`);
+        } // try
+    };
+    
+    
+    
     return (
         <>
             <Head>
@@ -14,6 +50,16 @@ export default function Login() {
                 <p>
                     Please login!
                 </p>
+                <Card theme='primary'>
+                    <CardHeader>
+                        Login
+                    </CardHeader>
+                    <CardBody tag='form' onSubmit={handleSubmit}>
+                        <TextInput name='username' required />
+                        <PasswordInput name='password' required />
+                        <Button type='submit'>Submit</Button>
+                    </CardBody>
+                </Card>
             </Main>
         </>
     );
