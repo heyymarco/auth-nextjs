@@ -38,8 +38,7 @@ export class Auth {
                 'refresh',
                 {
                     baseURL         : this.#authServerURL,
-                    headers         : { 'Content-Type': 'application/json' },
-                    withCredentials : true,
+                    withCredentials : true, // send the refresh token in the cookie (if any)
                 },
             );
             const responseData = response.data;
@@ -114,7 +113,7 @@ export class Auth {
         const axiosAuth = axios.create({
             baseURL         : this.#authServerURL,
             headers         : { 'Content-Type': 'application/json' },
-            withCredentials : true,
+            withCredentials : false, // no need to send/receive any cookie
         });
         axiosAuth.interceptors.request.use(
             (config) => {

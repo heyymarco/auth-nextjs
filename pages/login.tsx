@@ -20,8 +20,8 @@ export default function Login() {
                 '/login',
                 JSON.stringify(Object.fromEntries(requestData.entries())),
                 {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true,
+                    headers         : { 'Content-Type': 'application/json' },
+                    withCredentials : true, // wants to receive any cookie
                 },
             );
             const responseData = response.data;

@@ -2,7 +2,6 @@ import { Button } from '@reusable-ui/components';
 import Head from 'next/head'
 import { RequireAuth, Role, useAuth } from '../components/auth';
 import { Main } from '../components/Main'
-import axios from '../libs/axios';
 
 
 
