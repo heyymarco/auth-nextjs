@@ -14,10 +14,10 @@ export default function Posts() {
             //     withCredentials : true,
             // });
             const response = await auth?.axios?.delete('post');
-            console.log(response?.data);
+            alert(`Delete success! Server message ${JSON.stringify(response?.data)}`);
         }
         catch (error) {
-            alert(`delete failed: ${error}`);
+            alert(`Delete failed: ${error}`);
         } // try
     };
     
