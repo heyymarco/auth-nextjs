@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardHeader, PasswordInput, TextInput } from '@reusable-ui/components';
+import { Button, Card, CardBody, CardHeader, Check, PasswordInput, TextInput } from '@reusable-ui/components';
 import Head from 'next/head'
 import { Auth, useAuth } from '../components/auth';
 import { Main } from '../components/Main'
@@ -33,7 +33,7 @@ export default function Login() {
             
             
             
-            setAuth(new Auth(accessToken, 'http://localhost:3001'));
+            setAuth(new Auth(accessToken));
             router.replace(new URLSearchParams(window.location.search).get('from') ?? '/');
         }
         catch (error) {
@@ -61,6 +61,8 @@ export default function Login() {
                         <TextInput name='username' required />
                         <PasswordInput name='password' required />
                         <Button type='submit'>Submit</Button>
+                        <hr />
+                        <Check active={Auth.persistLogin} onActiveChange={(event) => Auth.persistLogin = event.active}>Trust this device</Check>
                     </CardBody>
                 </Card>
             </Main>
