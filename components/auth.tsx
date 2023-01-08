@@ -1,8 +1,8 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import jwt from "jsonwebtoken";
+import jwt_decode from 'jwt-decode';
 import axios from 'axios';
-import Unauthorized from "../pages/unauthorized";
+import Unauthorized from '../pages/unauthorized';
 
 
 
@@ -98,7 +98,7 @@ export class Auth {
         
         
         const accessToken = this.accessToken;
-        const decoded = accessToken ? jwt.decode(accessToken) : undefined;
+        const decoded = accessToken ? jwt_decode<{ username ?: string, roles ?: Role[] }|undefined>(accessToken) : undefined;
         if (!decoded || (typeof(decoded) !== 'object')) return this.#usernameCache = '';
         
         
@@ -117,7 +117,7 @@ export class Auth {
         
         
         const accessToken = this.accessToken;
-        const decoded = accessToken ? jwt.decode(accessToken) : undefined;
+        const decoded = accessToken ? jwt_decode<{ username ?: string, roles ?: Role[] }|undefined>(accessToken) : undefined;
         if (!decoded || (typeof(decoded) !== 'object')) return this.#rolesCache = [];
         
         
